@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ```sh
 python manage.py runserver
 ```
-This uses the default settings in the `settings.py` file, but in other to use
+This uses the default settings in the `settings.py` file, but in order to use
 custom settings e.g. different database user or database name, then duplicate the 
 `settings.dev.ini` file and name it `settings.ini` and put in your own values here.
 The reason for duplicating is that, `settings.ini` is ignored by git so it 

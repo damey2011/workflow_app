@@ -19,6 +19,22 @@ pip install -r requirements.txt
 ```sh
 python manage.py runserver
 ```
+This uses the default settings in the `settings.py` file, but in other to use
+custom settings e.g. different database user or database name, then duplicate the 
+`settings.ini` file and name it `settings.dev.ini` and put in your own values here.
+The reason for duplicating is that, `settings.dev.ini` is ignored by git so it 
+doesn't affect the other developer. This way we can keep different custom 
+non-application-dependent settings.
+
+## Extra
+
+If there is a need to export the database on the remote server to use on development machine, 
+we can reach 
+```bash
+https://sitename.com/utility/db-export/
+```
+Understood that this may be a security risk, so it's going to be available only in 
+development mode i.e. when `DEBUG=True` in settings.
 
 ## Author
 

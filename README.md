@@ -21,8 +21,8 @@ python manage.py runserver
 ```
 This uses the default settings in the `settings.py` file, but in other to use
 custom settings e.g. different database user or database name, then duplicate the 
-`settings.ini` file and name it `settings.dev.ini` and put in your own values here.
-The reason for duplicating is that, `settings.dev.ini` is ignored by git so it 
+`settings.dev.ini` file and name it `settings.ini` and put in your own values here.
+The reason for duplicating is that, `settings.ini` is ignored by git so it 
 doesn't affect the other developer. This way we can keep different custom 
 non-application-dependent settings.
 

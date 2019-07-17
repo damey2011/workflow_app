@@ -17,7 +17,6 @@ def generate_db_dump():
     popen.wait()
     popen2 = subprocess.Popen(compress_command)
     popen2.wait()
-    """Upload to S3 here"""
     compressed_file_name = '{}.gz'.format(file_name)
     gzipped = open(compressed_file_name, mode='rb')
     file = File(file=gzipped)

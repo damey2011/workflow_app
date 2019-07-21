@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import cloudinary
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#Custom Auth
+AUTH_USER_MODEL = 'account.User'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -38,10 +41,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'account',
+    'organization',
+    'process',
+    'rest_framework_swagger',
     'corsheaders',
     'rest_framework',
     'utils'
-]
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -86,7 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('DB_NAME', default='workflow801'),
         'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default=''),
+        'PASSWORD': config('DB_PASSWORD', default='rapper001'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', cast=int, default=5432),
     }
@@ -111,6 +118,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Global configuration parameters for ogbanugot cloudinary
+cloudinary.config( 
+  cloud_name = "ogbanugot", 
+  api_key = "894291272153672", 
+  api_secret = "DNELrIT3lfziYb3u0HQsECDBv1E" 
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -130,3 +143,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = 'https://res.cloudinary.com/ogbanugot/'

@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import cloudinary
 from decouple import config
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+#Custom Auth
+AUTH_USER_MODEL = 'account.User'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -28,7 +31,6 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -38,15 +40,20 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'account',
+    'organization',
+    'process',
+    'rest_framework_swagger',
+    'rest_framework.authtoken',
     'corsheaders',
     'rest_framework',
     'utils'
-]
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -55,6 +62,10 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL=True
+CORS_ALLOW_CREDENTIALS =True
+CSRF_TRUSTED_ORIGINS = [
+    'change.allowed.com',
+]
 
 ROOT_URLCONF = 'workflow_app.urls'
 
@@ -111,6 +122,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+#Global configuration parameters for ogbanugot cloudinary
+cloudinary.config( 
+  cloud_name = "ogbanugot", 
+  api_key = "894291272153672", 
+  api_secret = "DNELrIT3lfziYb3u0HQsECDBv1E" 
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -130,3 +147,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = 'https://res.cloudinary.com/ogbanugot/'

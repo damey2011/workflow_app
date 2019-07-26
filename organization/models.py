@@ -22,15 +22,17 @@ class Groups(BaseModel):
     description = models.TextField(max_length=255)
 
 class UsertoOrg(BaseModel):
-    user = models.ForeignKey(get_user_model(),related_name='userorganizations', on_delete=models.CASCADE)
+    admin = models.ForeignKey(get_user_model(),related_name='add_user_organizations', on_delete=models.CASCADE)
+    user_obj = models.ForeignKey(get_user_model(),related_name='userorganizations', on_delete=models.CASCADE)
     org = models.ForeignKey(Organization, related_name='usertoorgs', on_delete=models.CASCADE)
     class Meta:
-        unique_together = ['user', 'org']
+        unique_together = ['user_obj', 'org']
         
 # Link these two (Also, look at onetomany relationship)
 class UsertoGroups(BaseModel):
-    user = models.ForeignKey(get_user_model(),related_name='usergroups',on_delete=models.CASCADE)
+    admin = models.ForeignKey(get_user_model(),related_name='add_user_groups',on_delete=models.CASCADE)
+    user_obj = models.ForeignKey(get_user_model(),related_name='usergroups', on_delete=models.CASCADE)
     org = models.ForeignKey(Organization,related_name='usertoorgtogroups', on_delete=models.CASCADE)
     grp = models.ForeignKey(Groups, related_name='usertogroups',on_delete=models.CASCADE)
     class Meta:
-        unique_together = ['user', 'org', 'grp']
+        unique_together = ['user_obj', 'org', 'grp']

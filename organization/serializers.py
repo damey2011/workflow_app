@@ -11,7 +11,8 @@ class OrganizationSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.id")
     org_name = models.CharField(max_length=255, 
     validators=[UniqueValidator(queryset=get_user_model().objects.all(), message="An organization with that name already exists.")])
-    groups = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # groups = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
 
     class Meta:
         model = Organization
@@ -20,19 +21,20 @@ class OrganizationSerializer(serializers.ModelSerializer):
                 'org_name',
                 'description',
                 'logo',
-                'groups',
-                'usertoorgs',
-                'usertoorgtogroups',
-                'processorg',
-                'orgforms',
-                'orgdocuments')
-        
+                # 'groups',
+                # 'usertoorgs',
+                # 'usertoorgtogroups',
+                # 'processorg',
+                # 'orgforms',
+                # 'orgdocuments')
+        )
     def create(self, validated_data):
         return Organization.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         instance.org_name = validated_data.get('org_name',instance.org_name)
         instance.description = validated_data.get('description',instance.description)
+        instance.logo = validated_data.get('logo',instance.logo)
         return instance
     
 
@@ -40,7 +42,7 @@ class GroupsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Groups
-        fields = ('id','organization', 'group_name','description','usertogroups','stages_to_group')
+        fields = ('id','organization', 'group_name','description','usertogroups','tasks_to_group')
         
     def create(self, validated_data):
         return Groups.objects.create(**validated_data)
@@ -55,7 +57,7 @@ class UsertoOrgSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UsertoOrg
-        fields = ('id','user_id','org')
+        fields = ('id','user_obj','org')
         
     # def create(self, validated_data):
     #     return UsertoOrg.objects.create(**validated_data)
@@ -68,7 +70,7 @@ class UsertoGroupsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = UsertoGroups
-        fields = ('id','org','grp')
+        fields = ('id','user_obj','org','grp')
         
     # def create(self, validated_data):
     #     return UsertoGroups.objects.create(**validated_data)

@@ -5,18 +5,17 @@ from rest_framework import serializers
 from django.conf import settings
 from rest_framework.validators import UniqueValidator
 
-#Add feilds for users
 class ProcessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Process
-        fields = ('id','user_id','organization','process_name','description','stages')
+        fields = ('id','user_id','organization','process_name','description','isComplete','stages')
 
 class StageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stage
-        fields = ('id','user_id','process', 'order','groups','users','tasks')
+        fields = ('id','user_id','process', 'order','isComplete','tasks')
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -35,7 +34,7 @@ class TaskSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Tasks
-        fields = ('id','user_id','stage','document','form')
+        fields = ('id','user_id','stage','document','form','groups','users','isComplete')
 
 class FormresponseSerializer(serializers.ModelSerializer):
     

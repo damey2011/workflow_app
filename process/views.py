@@ -47,7 +47,7 @@ class ProcessDetail(generics.RetrieveUpdateDestroyAPIView):
 
 ##############################################################################################
 class StageList(generics.ListCreateAPIView):
-    '''Sample request: {'process_id':'3',order':'1','groups':'2','users':'2'}'''
+    '''Sample request: {'process_id':'3',order':'1'}'''
     serializer_class = StageSerializer
     parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly)#permission for authenticated users and owner of Organization
@@ -70,7 +70,7 @@ class StageDetail(generics.RetrieveUpdateDestroyAPIView):
 
 ##############################################################################################
 class TaskList(generics.ListCreateAPIView):
-    '''Sample request: {'stage_id','document_id','form_id''}'''
+    '''Sample request: {'stage','document','form','groups':'2','users':'2'}'''
     serializer_class = TaskSerializer
     parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly)#permission for authenticated users and owner of Organization
@@ -166,3 +166,24 @@ class FormresponseDetail(generics.RetrieveUpdateDestroyAPIView):
     parser_classes = (MultiPartParser, FormParser,)
     serializer_class = FormresponseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly) 
+
+################################################################################################
+
+@api_view(['POST'])
+def processflow(request, format=None):
+    '''Sample request: {"email":"ogbanugot@gmail.com","password":"mypass","first_name":"ogban","last_name":"ugot", "phone_number":"08092343839"}
+    '''
+    if request.user.is_authenticated:
+        return Response(status = status.HTTP_200_OK)
+
+    serializer = SignUpSerializer(data=request.data)
+    if serializer.is_valid():
+            email = serializer.validated_data["email"]
+            first_name = serializer.validated_data["first_name"]
+            last_name = serializer.validated_data["last_name"]           
+            user = get_user_model().objects.create_user(email=email, username=email, 
+                                                password = serializer.validated_data["password"],
+                                                first_name=first_name,
+                                                last_name=last_name)
+            return Response(serializer.data, status=201)                     
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    

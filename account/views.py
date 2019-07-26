@@ -8,6 +8,7 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from rest_framework.mixins import UpdateModelMixin
 from django.http import HttpResponse, JsonResponse
 from account.permissions import IsOwnerOrReadOnly
 from rest_framework.parsers import FormParser, MultiPartParser
@@ -79,11 +80,38 @@ class UserList(generics.ListCreateAPIView):
         else:
             serializer.save() 
 
-# #         if serializer.validated_data["user"] != self.request.user:
 
+class UpdateProfile(UpdateModelMixin):
 
-class UserDetail(generics.RetrieveUpdateDestroyAPIView):
-    '''Retrieve, modify or delete user created organization.'''
+    def get_object(self):        
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = queryset.get(id=self.request.user.id)
+        self.check_object_permissions(self.request, obj)
+        return obj
+        
+    def updateprofile(self, request, *args, **kwargs):
+        user = request.user.id if request.user.is_authenticated else get_anonymous_user() #handling unauthorized access
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)   
+        return Response(self.perform_update(serializer,user))
+
+    def perform_update(self, serializer, user):
+        if serializer.is_valid():
+            image = serializer.validated_data['profile_pic']
+            # if(image.size > 1000000):
+            #     return get_api_response(ProfileStatusCodes.Profile_Pic_Size_Exceeded, httpStatusCode= status.HTTP_400_BAD_REQUEST)                            
+            if image:
+                result = cloudinary.uploader.upload(image, folder = "workflow801") #cloudinary upload
+                image_public_id = result['public_id']  #store the public id cloudinary upload
+                print(image_public_id)
+                serializer.save(user_id=user, profile_pic=image_public_id) #save the public id in db
+            else:
+                serializer.save(user_id=user) 
+            return serializer.data 
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView, UpdateProfile):
+    '''Retrieve, modify or delete user.'''
     queryset = get_user_model().objects.all()
     parser_classes = (MultiPartParser, FormParser,)
     serializer_class = ProfileSerializer
@@ -93,6 +121,9 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         obj = queryset.get(id=self.request.user.id)
         self.check_object_permissions(self.request, obj)
         return obj
-
+    
+    def put(self, request, *args, **kwargs):
+        return self.updateprofile(request, *args, **kwargs)     
+ 
         
 

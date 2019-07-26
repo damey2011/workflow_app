@@ -13,15 +13,16 @@ class BaseModel(models.Model):
 class Process(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdprocesses', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name='processorg', on_delete=models.CASCADE)
-    process_name = models.CharField(max_length=255, unique=True)
+    process_name = models.CharField(max_length=255)
     description = models.TextField(max_length=255)
+    isComplete = models.BooleanField(default = False)
+
     
 class Stage(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdstage', on_delete=models.CASCADE)
     process = models.ForeignKey(Process, related_name='stages', on_delete=models.CASCADE)
     order = models.CharField(max_length=255)
-    groups = models.ForeignKey(Groups, related_name="stages_to_group", on_delete=models.CASCADE,null=True)
-    users = models.ForeignKey(get_user_model(), related_name="stages_to_user", on_delete=models.CASCADE, null=True)
+    isComplete = models.BooleanField(default = False)
 
 class Form(BaseModel):
     user = models.ForeignKey(get_user_model(),related_name='userforms',on_delete=models.CASCADE)
@@ -40,6 +41,9 @@ class Tasks(BaseModel):
     stage = models.ForeignKey(Stage,related_name='tasks', on_delete=models.CASCADE)
     form = models.ForeignKey(Form, related_name='formtasks', on_delete=models.CASCADE, null=True)
     document = models.ForeignKey(Document, related_name='documenttasks', on_delete=models.CASCADE, null=True)
+    users = models.ForeignKey(get_user_model(), related_name="tasks_to_user", on_delete=models.CASCADE, null=True)
+    groups = models.ForeignKey(Groups, related_name="tasks_to_group", on_delete=models.CASCADE,null=True)
+    isComplete = models.BooleanField(default = False)
 
 class Formresponse(BaseModel):
     user = models.ForeignKey(get_user_model(),related_name='userformresponse',on_delete=models.CASCADE)

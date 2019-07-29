@@ -20,4 +20,6 @@ urlpatterns = [
 
     url(r'^form/formresponse/$', views.FormresponseList.as_view()), #List Formresponse
     url(r'^form/formresponse/(?P<org>[0-9]+)/$', views.FormresponseDetail.as_view(),), #get a particular Formresponse
+
+    url(r'^processflow/$', views.processflow,) #Process flow
 ]

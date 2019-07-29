@@ -17,18 +17,22 @@ from rest_framework import viewsets
 from rest_framework import filters
 from rest_framework.mixins import UpdateModelMixin
 from .profileResponseHelper import get_api_response, ProfileStatusCodes
+from rest_framework.authentication import TokenAuthentication, SessionAuthentication
+import jwt
+from django.conf import settings
 
 class OrganizationList(generics.ListCreateAPIView):
     '''A user can retrieve all organizations and create an organization
     Sample request: {"org_name":"department of Computer Science","Description":"myDescription","logo":"Image Data"}'''
     serializer_class = OrganizationSerializer
+    authentication_classes = (TokenAuthentication,)
     parser_classes = (MultiPartParser, FormParser,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['org_name']
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsOwnerOrReadOnly)#permission for authenticated users and owner of Organization
-
     def get_queryset(self):
         queryset = Organization.objects.all()
+        print(self.request.auth)
         user = self.request.user if self.request.user.is_authenticated else get_anonymous_user() #handling unauthorized access
         return queryset
 
@@ -49,9 +53,9 @@ class UpdateOrg(UpdateModelMixin):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)   
-        return Response(self.perform_update(serializer,user))
+        return Response(self.perform_update(serializer))
 
-    def perform_update(self, serializer, user):
+    def perform_update(self, serializer):
         if serializer.is_valid():
             image = serializer.validated_data['logo']
             # if(image.size > 1000000):
@@ -60,9 +64,9 @@ class UpdateOrg(UpdateModelMixin):
                 result = cloudinary.uploader.upload(image, folder = "workflow801") #cloudinary upload
                 image_public_id = result['public_id']  #store the public id cloudinary upload
                 print(image_public_id)
-                serializer.save(user_id=user, logo=image_public_id) #save the public id in db
+                serializer.save(logo=image_public_id) #save the public id in db
             else:
-                serializer.save(user_id=user) 
+                serializer.save() 
             return serializer.data 
 
 class OrganizationDetail(generics.RetrieveUpdateDestroyAPIView, UpdateOrg):
@@ -137,7 +141,7 @@ class GroupsDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class UsertoGroupsList(generics.ListCreateAPIView):
     '''A User can join an organization;
-        Sample request: {"grp":"1,"org":"1"}'''
+        Sample request: {"user_obj":"1","grp":"1,"org":"1"}'''
     serializer_class = UsertoGroupsSerializer
     parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,Is_OwnerOrReadOnly)#permission for authenticated users and owner of Organization

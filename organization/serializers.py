@@ -3,7 +3,6 @@ from organization.models import *
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.conf import settings
-from account.models import User
 from rest_framework.validators import UniqueValidator
 
 #Add feilds for users
@@ -35,14 +34,16 @@ class OrganizationSerializer(serializers.ModelSerializer):
         instance.org_name = validated_data.get('org_name',instance.org_name)
         instance.description = validated_data.get('description',instance.description)
         instance.logo = validated_data.get('logo',instance.logo)
+        instance.save()
         return instance
     
 
 class GroupsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Groups
-        fields = ('id','organization', 'group_name','description','usertogroups','tasks_to_group')
+        fields = ('id','organization', 'group_name','description')
         
     def create(self, validated_data):
         return Groups.objects.create(**validated_data)
@@ -51,6 +52,7 @@ class GroupsSerializer(serializers.ModelSerializer):
         instance.group_name = validated_data.get('group_name',instance.group_name)
         instance.description = validated_data.get('description',instance.description)
         instance.organization = validated_data.get('organization',instance.organization)
+        instance.save()
         return instance
         
 class UsertoOrgSerializer(serializers.ModelSerializer):

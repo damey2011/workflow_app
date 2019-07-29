@@ -18,7 +18,6 @@ from rest_framework import filters
 from rest_framework.mixins import UpdateModelMixin
 from .profileResponseHelper import get_api_response, ProfileStatusCodes
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
-import jwt
 from django.conf import settings
 
 class OrganizationList(generics.ListCreateAPIView):

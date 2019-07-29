@@ -9,12 +9,13 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-import django_heroku
 import os
-import cloudinary
-from decouple import config
-import dj_database_url
 from datetime import timedelta
+
+import cloudinary
+import dj_database_url
+import django_heroku
+from decouple import config
 
 # Activate Django-Heroku.
 
@@ -22,7 +23,7 @@ from datetime import timedelta
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-#Custom Auth
+# Custom Auth
 AUTH_USER_MODEL = 'account.CustomUser'
 
 # Quick-start development settings - unsuitable for production
@@ -54,12 +55,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'utils'
-    ]
+]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', 
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,8 +69,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL=True
-CORS_ALLOW_CREDENTIALS =True
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     'change.allowed.com',
 ]
@@ -101,12 +102,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         # 'rest_framework.authentication.TokenAuthentication',  
         'account.authentication.ExpiringTokenAuthentication',  # custom authentication class  
-        ],
+    ],
     'DEFAULT_PARSER_CLASSES': [
-            'rest_framework.parsers.JSONParser',
-            'rest_framework.parsers.FormParser',
-            'rest_framework.parsers.MultiPartParser'
-        ]
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ]
 }
 
 # Database
@@ -122,7 +123,6 @@ DATABASES = {
         'PORT': config('DB_PORT', cast=int, default=5432),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -142,11 +142,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-#Global configuration parameters for ogbanugot cloudinary
-cloudinary.config( 
-  cloud_name = "ogbanugot", 
-  api_key = "894291272153672", 
-  api_secret = "DNELrIT3lfziYb3u0HQsECDBv1E" 
+# Global configuration parameters for ogbanugot cloudinary
+cloudinary.config(
+    cloud_name="ogbanugot",
+    api_key="894291272153672",
+    api_secret="DNELrIT3lfziYb3u0HQsECDBv1E"
 )
 
 # Internationalization
@@ -162,18 +162,16 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 if DEBUG:
-   STATICFILES_DIRS = [
-   os.path.join(BASE_DIR, 'static'),
-   ]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'static'),
+    ]
 else:
-   STATIC_ROOT = os.path.join(BASE_DIR,'static')
-
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATIC_URL = '/static/'

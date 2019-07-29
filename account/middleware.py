@@ -1,8 +1,9 @@
 from django.utils.functional import SimpleLazyObject
-from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 from rest_framework.exceptions import ValidationError
+from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 
-#from rest_framework.request from Request
+
+# from rest_framework.request from Request
 class AuthenticationMiddlewareJWT(object):
     def __init__(self, get_response):
         self.get_response = get_response
@@ -19,5 +20,5 @@ class AuthenticationMiddlewareJWT(object):
                 request.user = user
             except ValidationError as v:
                 print("validation error", v)
-            
+
         return self.get_response(request)

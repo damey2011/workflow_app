@@ -9,16 +9,21 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
-
+import django_heroku
 import os
 import cloudinary
 from decouple import config
+import dj_database_url
+from datetime import timedelta
+
+# Activate Django-Heroku.
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 #Custom Auth
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'account.CustomUser'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -40,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
     'account',
     'organization',
     'process',
@@ -51,8 +57,9 @@ INSTALLED_APPS = [
     ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -88,6 +95,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'workflow_app.wsgi.application'
 
+TOKEN_EXPIRED_AFTER_SECONDS = 86400
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.TokenAuthentication',  
+        'account.authentication.ExpiringTokenAuthentication',  # custom authentication class  
+        ],
+    'DEFAULT_PARSER_CLASSES': [
+            'rest_framework.parsers.JSONParser',
+            'rest_framework.parsers.FormParser',
+            'rest_framework.parsers.MultiPartParser'
+        ]
+}
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
@@ -147,5 +167,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+if DEBUG:
+   STATICFILES_DIRS = [
+   os.path.join(BASE_DIR, 'static'),
+   ]
+else:
+   STATIC_ROOT = os.path.join(BASE_DIR,'static')
+
+
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'staticfiles')
+STATIC_URL = '/static/'
+
+# Extra places for collectstatic to find static files.
+STATICFILES_DIRS = [
+    os.path.join(PROJECT_ROOT, 'static'),
+]
+
+# Simplified static file serving.
+# https://warehouse.python.org/project/whitenoise/
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = 'https://res.cloudinary.com/ogbanugot/'
+
+django_heroku.settings(locals())

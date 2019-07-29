@@ -2,6 +2,10 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import BaseUserManager, AbstractUser
 from django.core.validators import RegexValidator
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
@@ -9,7 +13,7 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True
 
-class User(AbstractUser, BaseModel):
+class CustomUser(AbstractUser, BaseModel):
     email = models.EmailField(
         'email address',
         max_length=150, 
@@ -19,20 +23,20 @@ class User(AbstractUser, BaseModel):
         error_messages={
             'unique': "A user with that email already exists.",
         })
-    username = models.CharField(
-        max_length=150,
-        help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        unique=True,
-        error_messages={
-            'unique': ("A user with that username already exists."),
-        },
-        blank=True
-    )
-    password = models.CharField(
-        max_length=150,
-        help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-        blank=False
-    )
+    # username = models.CharField(
+    #     max_length=150,
+    #     help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+    #     unique=True,
+    #     error_messages={
+    #         'unique': ("A user with that username already exists."),
+    #     },
+    #     blank=True
+    # )
+    # password = models.CharField(
+    #     max_length=150,
+    #     help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+    #     blank=False
+    # )
     first_name = models.CharField('first name', max_length=30)
     last_name = models.CharField('last name', max_length=30, null=True, blank=True)
     phone_number = models.CharField(max_length=11, validators=[RegexValidator(regex='^\d{11}$')])
@@ -74,3 +78,11 @@ class UserManager(BaseUserManager):
     user.is_active=True
     user.save(using=self._db)
     return user
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
+
+

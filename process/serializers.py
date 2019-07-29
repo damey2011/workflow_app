@@ -6,7 +6,7 @@ from django.conf import settings
 from rest_framework.validators import UniqueValidator
 
 class ProcessSerializer(serializers.ModelSerializer):
-
+    user_id = serializers.ReadOnlyField(source="user.id")
     class Meta:
         model = Process
         fields = ('id','user_id','organization','process_name','description','isComplete','stages')
@@ -31,6 +31,7 @@ class FormSerializer(serializers.ModelSerializer):
         fields = ('id','user_id','organization','form_name','description','fields','formtasks','formresponse')
 
 class TaskSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source="user.id")
     
     class Meta:
         model = Tasks

@@ -34,7 +34,9 @@ class Form(BaseModel):
 class Document(BaseModel):
     user = models.ForeignKey(get_user_model(),related_name='userdocuments',on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name='orgdocuments', on_delete=models.CASCADE)
-    file = models.CharField(max_length=255)
+    filename = models.CharField(max_length=255,null=True)
+    description = models.TextField(max_length=255,null=True)
+    link = models.CharField(max_length=255)
 
 class Tasks(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdtask', on_delete=models.CASCADE)

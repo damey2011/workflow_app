@@ -22,7 +22,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id','user_id','organization','file','documenttasks')
+        fields = ('id','user_id','organization','filename','description','link','documenttasks')
         
 class FormSerializer(serializers.ModelSerializer):
     

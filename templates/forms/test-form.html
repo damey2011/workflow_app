@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4 mb-4">Formbuilder Demo</h1>
+
+    <iframe src="" id="form-builder" frameborder="0" style="min-height: 600px; overflow: auto; width: 100%;"></iframe>
+
+    <hr>
+    <br>
+    <hr>
+    {#    If update #}
+    <h1>Render Form</h1>
+
+    <iframe src="" id="form-builder-render" frameborder="0" style="min-height: 600px; overflow: auto; width: 100%;"></iframe>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    jQuery(function($) {
+        window.WORKFLOW_TOKEN = 'c3e0ed87dec308e20f32bcce63185f0940810a2a'
+        $.ajax({
+            url: "/process/formbuilder/org/1/update/15/",
+            headers: {"Authorization": "Token " + window.WORKFLOW_TOKEN},
+            success: function (response) {
+                $('#form-builder').attr('srcdoc', response)
+            }
+        });
+
+
+        {#If update#}
+
+        $.ajax({
+            url: "/process/formbuilder/org/1/view/15/",
+            headers: {"Authorization": "Token " + window.WORKFLOW_TOKEN},
+            success: function (response) {
+                $('#form-builder-render').attr('srcdoc', response)
+            }
+        });
+    })
+    /*window.document.addEventListener('workflow-form-saved', handleEvent, false)
+    function handleEvent(e) {
+        console.log(e.detail)
+    }*/
+</script>
+</body>
+
+</html>

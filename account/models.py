@@ -26,20 +26,6 @@ class CustomUser(AbstractUser, BaseModel):
         error_messages={
             'unique': "A user with that email already exists.",
         })
-    # username = models.CharField(
-    #     max_length=150,
-    #     help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-    #     unique=True,
-    #     error_messages={
-    #         'unique': ("A user with that username already exists."),
-    #     },
-    #     blank=True
-    # )
-    # password = models.CharField(
-    #     max_length=150,
-    #     help_text=('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-    #     blank=False
-    # )
     first_name = models.CharField('first name', max_length=30)
     last_name = models.CharField('last name', max_length=30, null=True, blank=True)
     phone_number = models.CharField(max_length=11, validators=[RegexValidator(regex='^\d{11}$')])

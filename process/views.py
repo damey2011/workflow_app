@@ -99,7 +99,7 @@ class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
 class DocumentList(generics.ListCreateAPIView):
     '''Sample request: {"organization":"1","file":"cloudinary url"}'''
     serializer_class = DocumentSerializer
-    parser_classes = (MultiPartParser, FormParser, FileUploadParser,)
+    parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 

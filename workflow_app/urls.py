@@ -13,12 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import path 
 from django.conf.urls import url, include
+from django.contrib import admin
+from django.urls import path
 from django.views.generic import RedirectView
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework.authtoken import views
 
 schema_view = get_swagger_view(title='Workflow801 API')
 
@@ -26,10 +25,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('utility/', include('utils.urls', namespace='utils')),
     url(r'^schema/$', schema_view),
-    url(r'^token_auth/', views.obtain_auth_token), #token auth    
-    url(r'^$', RedirectView.as_view(url='account/login', permanent=False)), #login
-    url(r'^account/', include('account.urls')), #accounts app
+    # url(r'^token_auth/', views.obtain_auth_token), #token auth    
+    url(r'^$', RedirectView.as_view(url='account/login', permanent=False)),  # login
+    url(r'^account/', include('account.urls')),  # accounts app
     url(r'^org/', include('organization.urls')),
     url(r'^process/', include('process.urls')),
-    
+
 ]

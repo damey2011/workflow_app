@@ -120,21 +120,9 @@ class DocumentList(generics.ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-<<<<<<< HEAD
         user = self.request.user.id if self.request.user.is_authenticated else get_anonymous_user() #handling unauthorized access
         serializer.save(user_id=user) 
-=======
-        user = self.request.user.id if self.request.user.is_authenticated else get_anonymous_user()  # handling unauthorized access
-        # file = self.request.FILES['file']
-        # if file:
-        #     result = cloudinary.uploader.upload(file, 
-        #                                         folder = "workflow801",
-        #                                         overwrite = "true", 
-        #                                         resource_type = "raw") #cloudinary file upload
-        #     file_url = result['secure_url']  #store the public id cloudinary upload
-        serializer.save(user_id=user)
 
->>>>>>> 771bb583ad08d522d1675300aec09580fc483730
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Document.'''

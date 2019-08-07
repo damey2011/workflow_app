@@ -1,0 +1,75 @@
+{% load widget_tweaks %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://draggable.github.io/formeo/assets/css/formeo.min.css">
+<div class="mr-3 ml-3">
+    <form action="{{ submit_url }}" id="form-builder-form">
+        {% for field in form.hidden_fields %}
+            {{ field }}
+        {% endfor %}
+        <div class="row">
+            {% for field in form.visible_fields %}
+                <div class="col-lg-12">
+                    <div class="form-group">
+                        <label for="{{ field.id_label }}">{{ field.label }}</label>
+                        {% render_field field|add_class:'form-control' %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <hr>
+    </form>
+    <div id="fb-editor" class="mt-4">
+
+    </div>
+    <div class="mt-4 mb-4">
+        <input type="submit" id="submit-create-form-field" value="{% if is_update %}Update{% else %}Save{% endif %}" class="btn btn-primary">
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
+<script>
+    jQuery(function($) {
+        let editor = $(document.getElementById('fb-editor')).formBuilder({
+            dataType: 'json',
+            {% if is_update %}
+                formData: {{ form.config.value|safe }},
+            {% endif %}
+            disabledActionButtons: ['data', 'save'],
+            disabledAttrs: [
+                'name',
+                'access',
+                'class',
+                'placeholder',
+                'step'
+            ]
+        });
+
+        $('#submit-create-form-field').on('click', function (e) {
+            $('#form-builder-form').submit()
+        })
+
+        $('#form-builder-form').on('submit', handleFormFormSubmission)
+
+        function handleFormFormSubmission (e) {
+            e.preventDefault();
+            $('#form-builder-form #id_config').val(editor.formData);
+            let data = $('#form-builder-form').serializeArray()
+            $.ajax({
+                url: '{{ submit_url }}',
+                data: data,
+                method: 'post',
+                headers: {"Authorization": "Token " + window.top.WORKFLOW_TOKEN},
+                success: function (data) {
+                    let event = new CustomEvent('workflow-form-saved', {detail:{status:'success', data: data}})
+                    window.parent.document.dispatchEvent(event)
+                },
+                error: function (resp) {
+                    alert('Error occurred saving form')
+                }
+            })
+
+        }
+    });
+</script>

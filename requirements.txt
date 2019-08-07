@@ -14,3 +14,4 @@ django-guardian==1.4.9
 Pillow==5.4.1             
 djangorestframework-jwt==1.11.0
 django-widget-tweaks==1.4.5
+drf-dynamic-fields==0.3.1

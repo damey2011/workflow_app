@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import include
 
 from . import views
 
@@ -17,6 +18,8 @@ urlpatterns = [
 
     url(r'^document/$', views.DocumentList.as_view()),  # List Document
     url(r'^document/(?P<pk>[0-9]+)/$', views.DocumentDetail.as_view(), ),  # get a particular document
+
+    url(r'^formbuilder/', include('process.formbuilder.urls')),
 
     url(r'^form/formresponse/$', views.FormresponseList.as_view()),  # List Formresponse
     url(r'^form/formresponse/(?P<org>[0-9]+)/$', views.FormresponseDetail.as_view(), ),  # get a particular Formresponse

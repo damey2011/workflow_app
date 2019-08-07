@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view
 from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
 from rest_framework.response import Response
 
+from account.serializers import SignUpSerializer
 from organization.permissions import IsOwnerOrReadOnly
 from process.serializers import *
 
@@ -148,7 +149,7 @@ class FormList(generics.ListCreateAPIView):
 
 
 class FormDetail(generics.RetrieveUpdateDestroyAPIView):
-    '''Retrieve, modify or delete Form.'''
+    """Retrieve, modify or delete Form."""
     queryset = Form.objects.all()
     parser_classes = (MultiPartParser, FormParser,)
     serializer_class = FormSerializer
@@ -158,7 +159,7 @@ class FormDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FormresponseList(generics.ListCreateAPIView):
-    '''Sample request: {"form_id":"2","response":"Response"}'''
+    """Sample request: {"form_id":"2","response":"Response"}"""
     serializer_class = FormresponseSerializer
     parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -175,7 +176,7 @@ class FormresponseList(generics.ListCreateAPIView):
 
 
 class FormresponseDetail(generics.RetrieveUpdateDestroyAPIView):
-    '''Retrieve, modify or delete Formresponse.'''
+    """Retrieve, modify or delete Formresponse."""
     queryset = Formresponse.objects.all()
     parser_classes = (MultiPartParser, FormParser,)
     serializer_class = FormresponseSerializer
@@ -186,8 +187,8 @@ class FormresponseDetail(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(['POST'])
 def processflow(request, format=None):
-    '''Sample request: {"email":"ogbanugot@gmail.com","password":"mypass","first_name":"ogban","last_name":"ugot", "phone_number":"08092343839"}
-    '''
+    """Sample request: {"email":"ogbanugot@gmail.com","password":"mypass","first_name":"ogban","last_name":"ugot", "phone_number":"08092343839"}
+    """
     if request.user.is_authenticated:
         return Response(status=status.HTTP_200_OK)
 
@@ -207,7 +208,7 @@ def processflow(request, format=None):
 ###############################################################################################################
 @api_view(['POST'])
 def processflow(request, format=None):
-    '''
+    """
     Sample request: {
         "id": 1,
         "user_id":3,
@@ -218,7 +219,7 @@ def processflow(request, format=None):
         "users": null,
         "isComplete": false
     }
-    '''
+    """
     # set isComplete in task True
     task_id = request.data.get("id")
     task = Tasks.objects.get(pk=task_id)

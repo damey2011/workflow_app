@@ -26,7 +26,8 @@ class DocumentSerializer(serializers.ModelSerializer):
 class FormSerializer(serializers.ModelSerializer):
     class Meta:
         model = Form
-        fields = ('id', 'user_id', 'organization', 'form_name', 'description', 'fields', 'formtasks', 'formresponse')
+        fields = ('id', 'user_id', 'config', 'user', 'organization', 'form_name', 'description', 'formtasks',
+                  'formresponse')
 
 
 class TaskSerializer(serializers.ModelSerializer):

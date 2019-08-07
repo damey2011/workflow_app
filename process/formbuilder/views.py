@@ -5,11 +5,14 @@ from django.forms import model_to_dict
 from django.shortcuts import render_to_response, get_object_or_404
 from django.views.generic import TemplateView
 from rest_framework import status
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from process.formbuilder.forms import CreateFormForm
+from process.formbuilder.serializers import FormResponseSerializer
+from process.formbuilder.utils import compare_form_and_response
 from process.models import Form, Formresponse, FormResponseFile
 from process.serializers import FormSerializer
 
@@ -37,6 +40,7 @@ class CreateFormView(APIView):
 
 
 class UpdateFormView(APIView):
+    permission_classes = (IsAuthenticated,)
     template_name = 'forms/create-form.html'
     form_class = CreateFormForm
 
@@ -63,6 +67,7 @@ class UpdateFormView(APIView):
 
 
 class ViewForm(APIView):
+    permission_classes = (IsAuthenticated,)
     template_name = 'forms/view-form.html'
 
     def get_object(self):
@@ -80,7 +85,9 @@ class ViewForm(APIView):
             'submit_url': self.request.build_absolute_uri()
         }
         if self.get_user_form_responses().exists():
-            ctx['form_config'] = self.get_user_form_responses(True).fb_data
+            ctx['form_config'] = json.dumps(compare_form_and_response(
+                self.get_object().config, self.get_user_form_responses(True).fb_data
+            ))
         return render_to_response(self.template_name, ctx)
 
     def post(self, request, *args, **kwargs):
@@ -97,8 +104,26 @@ class ViewForm(APIView):
             frf = FormResponseFile.objects.create(form_response=form_response, file=file, field_name=key)
             form_data[key] = frf.file.url
         form_response.response = form_data
+        form_response.fb_data = fb_data
         form_response.save()
         return Response(form_data, status=status.HTTP_200_OK)
+
+
+class ViewFormResponses(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FormResponseSerializer
+
+    def get_queryset(self):
+        return Formresponse.objects.filter(form_id=self.kwargs.get('form_id'))
+
+
+class ViewFormResponse(RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FormResponseSerializer
+    lookup_url_kwarg = 'response_id'
+
+    def get_queryset(self):
+        return Formresponse.objects.filter(pk=self.kwargs.get('response_id'))
 
 
 class TestFormView(TemplateView):

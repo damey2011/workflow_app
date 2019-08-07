@@ -186,6 +186,37 @@ window.document.addEventListener('user-submitted-workflow-form', function (e) {
 }, false)
 ```
 
+### Retrieving User Data
+After the user must have filled the forms, we would want to retrieve these data. This is possible through endpoint: 
+`/process/formbuilder/org/<organization_id>/view/<form_id>/responses/`.
+And this endpoint would return data like this.
+```json
+[
+    {
+        "id": 5,
+        "created_date": "2019-08-07T20:03:12.509302Z",
+        "modified_date": "2019-08-07T21:46:00.409645Z",
+        "response": {
+            "First Name": [
+                "Something"
+            ],
+            "Last Name": [
+                "Name"
+            ],
+            "Other": [
+                "Hello"
+            ],
+            "Checkbox Group": [
+                "Option 1",
+                "Option 2"
+            ]
+        },
+        "user": 1,
+        "form": 15
+    }
+]
+```
+
 ## Extra
 If there is a need to export the database on the remote server to use on development machine, 
 we can reach 

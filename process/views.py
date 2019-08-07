@@ -182,6 +182,7 @@ class FormresponseDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FormresponseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
+
 ################################################################################################
 
 

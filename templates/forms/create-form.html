@@ -54,6 +54,10 @@
 
         function handleFormFormSubmission (e) {
             e.preventDefault();
+            let submitBtn = $('#submit-create-form-field')
+            let btnOriginalText = submitBtn.val()
+            submitBtn.val('Please wait ...')
+            submitBtn.attr('disabled', 'true')
             $('#form-builder-form #id_config').val(editor.formData);
             let data = $('#form-builder-form').serializeArray()
             $.ajax({
@@ -64,9 +68,14 @@
                 success: function (data) {
                     let event = new CustomEvent('workflow-form-saved', {detail:{status:'success', data: data}})
                     window.parent.document.dispatchEvent(event)
+                    submitBtn.removeAttr('disabled')
+                    submitBtn.val(btnOriginalText)
                 },
                 error: function (resp) {
-                    alert('Error occurred saving form')
+                    let event = new CustomEvent('workflow-form-saved-failure', {detail:{status:'success', data: resp}})
+                    window.parent.document.dispatchEvent(event)
+                    submitBtn.removeAttr('disabled')
+                    submitBtn.val(btnOriginalText)
                 }
             })
 

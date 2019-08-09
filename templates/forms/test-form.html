@@ -23,7 +23,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script>
     jQuery(function($) {
-        window.WORKFLOW_TOKEN = 'c3e0ed87dec308e20f32bcce63185f0940810a2a'
+        window.WORKFLOW_TOKEN = 'df6c10746ffc8c4dc0835032eff92eb304439f21'
         $.ajax({
             url: "/process/formbuilder/org/1/update/15/",
             headers: {"Authorization": "Token " + window.WORKFLOW_TOKEN},
@@ -43,10 +43,22 @@
             }
         });
     })
-    /*window.document.addEventListener('workflow-form-saved', handleEvent, false)
-    function handleEvent(e) {
-        console.log(e.detail)
-    }*/
+
+    window.document.addEventListener('workflow-form-saved', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('user-submitted-workflow-form', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('workflow-form-saved-failure', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('user-submitted-workflow-form-failure', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
 </script>
 </body>
 

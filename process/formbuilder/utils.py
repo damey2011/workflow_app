@@ -20,6 +20,8 @@ def get_readable_form_data(data):
 
 
 def compare_form_and_response(form, response):
+    if len(response) > 0 and isinstance(response[0], str):
+        response = json.loads(response[0])
     for index, field in enumerate(form):
         for f in response:
             if field['name'] == f['name']:

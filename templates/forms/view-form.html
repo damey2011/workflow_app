@@ -30,6 +30,10 @@
 
         function handleFormFormSubmission (e) {
             e.preventDefault();
+            let submitBtn = $('#submit-wf-form')
+            let btnOriginalText = submitBtn.val()
+            submitBtn.val('Please wait ...')
+            submitBtn.attr('disabled', 'true')
             let data = new FormData(this);
             data.set('fb_data', JSON.stringify(frInstance.userData))
             $.ajax({
@@ -42,9 +46,14 @@
                 success: function (data) {
                     let event = new CustomEvent('user-submitted-workflow-form', {detail:{status:'success', data: data}})
                     window.parent.document.dispatchEvent(event)
+                    submitBtn.removeAttr('disabled')
+                    submitBtn.val(btnOriginalText)
                 },
                 error: function (resp) {
-                    alert('Error occurred saving form')
+                    let event = new CustomEvent('user-submitted-workflow-form-failure', {detail:{status:'fail', data: resp}})
+                    window.parent.document.dispatchEvent(event)
+                    submitBtn.removeAttr('disabled')
+                    submitBtn.val(btnOriginalText)
                 }
             })
         }

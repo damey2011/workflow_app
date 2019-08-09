@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4 mb-4">Formbuilder Demo</h1>
+
+    <iframe src="" id="form-builder" frameborder="0" style="min-height: 600px; overflow: auto; width: 100%;"></iframe>
+
+    <hr>
+    <br>
+    <hr>
+    {#    If update #}
+    <h1>Render Form</h1>
+
+    <iframe src="" id="form-builder-render" frameborder="0" style="min-height: 600px; overflow: auto; width: 100%;"></iframe>
+
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    jQuery(function($) {
+        window.WORKFLOW_TOKEN = 'df6c10746ffc8c4dc0835032eff92eb304439f21'
+        $.ajax({
+            url: "/process/formbuilder/org/1/update/15/",
+            headers: {"Authorization": "Token " + window.WORKFLOW_TOKEN},
+            success: function (response) {
+                $('#form-builder').attr('srcdoc', response)
+            }
+        });
+
+
+        {#If update#}
+
+        $.ajax({
+            url: "/process/formbuilder/org/1/view/15/",
+            headers: {"Authorization": "Token " + window.WORKFLOW_TOKEN},
+            success: function (response) {
+                $('#form-builder-render').attr('srcdoc', response)
+            }
+        });
+    })
+
+    window.document.addEventListener('workflow-form-saved', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('user-submitted-workflow-form', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('workflow-form-saved-failure', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+
+    window.document.addEventListener('user-submitted-workflow-form-failure', function (e) {
+        alert(JSON.stringify(e.detail))
+    }, false)
+</script>
+</body>
+
+</html>

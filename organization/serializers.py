@@ -34,7 +34,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
                                 validators=[UniqueValidator(queryset=get_user_model().objects.all(),
                                                             message="An organization with that name already exists.")])
     groups = GroupsSerializer(many=True, read_only=True)
-    userorgs = UsertoOrgSerializer(many=True, read_only=True)
+    usertoorgs = UsertoOrgSerializer(many=True, read_only=True)
     usertoorgtogroups = UsertoGroupsSerializer(many=True, read_only=True)
     processorg = ProcessSerializer(many=True, read_only=True)
     orgforms = FormSerializer(many=True, read_only=True)

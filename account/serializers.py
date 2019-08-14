@@ -3,7 +3,8 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
 from .models import CustomUser
-
+from process.serializers import *
+from organization.serializers import *
 
 class LoginSerializer(serializers.ModelSerializer):
     # This takes precedencer over the extra_kwargs
@@ -28,8 +29,18 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    # userorganizations = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-
+    createdorgs = OrganizationSerializer(many=True, read_only=True)
+    createdgroups = GroupsSerializer(many=True, read_only=True)
+    userorganizations = UsertoOrgSerializer(many=True, read_only=True)
+    usergroups = UsertoGroupsSerializer(many=True, read_only=True)
+    createdprocesses = ProcessSerializer(many=True, read_only=True)
+    createdstage = StageSerializer(many=True, read_only=True)
+    createdtask = TaskSerializer(many=True, read_only=True)
+    userforms = FormSerializer(many=True, read_only=True)
+    userdocuments = DocumentSerializer(many=True, read_only=True)
+    tasks_to_user = TaskSerializer(many=True, read_only=True)
+    userformresponse = FormresponseSerializer(many=True, read_only=True)
+    
     class Meta:
         model = CustomUser
         fields = ('id',

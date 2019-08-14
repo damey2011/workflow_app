@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from django.shortcuts import render, redirect
 from organization.permissions import IsOwnerOrReadOnly
 from rest_framework.parsers import JSONParser,FormParser, MultiPartParser, FileUploadParser
@@ -42,6 +43,37 @@ class ProcessList(generics.ListCreateAPIView):
         user = self.request.user.id if self.request.user.is_authenticated else get_anonymous_user()  # handling unauthorized access
         serializer.save(user_id=user)
 
+# class ProcessDetail(APIView):
+#     """
+#     Retrieve, update or delete a Process instance.
+#     """
+#     def get_object(self, pk):
+#         try:
+#             obj = Process.objects.get(pk=pk)
+#             stages = obj.stages
+#             print(obj)
+#             self.check_object_permissions(self.request, obj)
+#             return obj
+#         except Process.DoesNotExist:
+#             raise Http404
+
+#     def get(self, request, pk, format=None):
+#         Process = self.get_object(pk)
+#         serializer = ProcessSerializer(Process)
+#         return Response(serializer.data)
+
+#     def put(self, request, pk, format=None):
+#         Process = self.get_object(pk)
+#         serializer = ProcessSerializer(Process, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     def delete(self, request, pk, format=None):
+#         Process = self.get_object(pk)
+#         Process.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ProcessDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Process.'''

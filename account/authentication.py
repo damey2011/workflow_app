@@ -9,7 +9,6 @@ from rest_framework.exceptions import AuthenticationFailed
 
 # this return left time
 def expires_in(token):
-    print(token)
     time_elapsed = timezone.now() - token.created
     left_time = timedelta(seconds=settings.TOKEN_EXPIRED_AFTER_SECONDS) - time_elapsed
     return left_time

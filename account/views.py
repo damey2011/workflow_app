@@ -55,10 +55,12 @@ def sign_up(request, format=None):
         email = serializer.validated_data["email"]
         first_name = serializer.validated_data["first_name"]
         last_name = serializer.validated_data["last_name"]
+        phone_number = serializer.validated_data["phone_number"]
         user = get_user_model().objects.create_user(email=email, username=email,
                                                     password=serializer.validated_data["password"],
                                                     first_name=first_name,
-                                                    last_name=last_name)
+                                                    last_name=last_name,
+                                                    phone_number=phone_number)
         user_serializer = ProfileSerializer(user)
         token = Token.objects.get(user=user.id)
         return Response({"Token": token.key, "Expires_in": expires_in(token), "User": user_serializer.data}, status=201)
@@ -130,22 +132,3 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView, UpdateProfile):
     def put(self, request, *args, **kwargs):
         return self.updateprofile(request, *args, **kwargs)
 
-    # #this return left time
-# def expires_in(token):
-#     time_elapsed = timezone.now() - token.created
-#     left_time = timedelta(seconds = settings.TOKEN_EXPIRED_AFTER_SECONDS) - time_elapsed
-#     return left_time
-
-# # token checker if token expired or not
-# def is_token_expired(token):
-#     return expires_in(token) < timedelta(seconds = 0)
-
-# # if token is expired new token will be established
-# # If token is expired then it will be removed
-# # and new one with different key will be created
-# def token_expire_handler(token):
-#     is_expired = is_token_expired(token)
-#     if is_expired:
-#         token.delete()
-#         token = Token.objects.create(user = token.user)
-#     return is_expired, token

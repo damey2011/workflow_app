@@ -33,7 +33,6 @@ class UsertoOrg(BaseModel):
         unique_together = ['user_obj', 'org']
 
 
-# Link these two (Also, look at onetomany relationship)
 class UsertoGroups(BaseModel):
     admin = models.ForeignKey(get_user_model(), related_name='add_user_groups', on_delete=models.CASCADE)
     user_obj = models.ForeignKey(get_user_model(), related_name='usergroups', on_delete=models.CASCADE)

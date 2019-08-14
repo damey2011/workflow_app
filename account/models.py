@@ -7,6 +7,8 @@ from django.dispatch import receiver
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
+# from process.models import FormResponseFile
+
 
 class BaseModel(models.Model):
     created_date = models.DateTimeField(auto_now_add=True)
@@ -40,7 +42,7 @@ class CustomUser(AbstractUser, BaseModel):
     key_expires = models.DateTimeField(null=True)
     reset_passsword_key_expires = models.DateTimeField(null=True)
     profile_pic = models.ImageField(null=True, blank=False)
-    # organization = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='article', on_delete=models.CASCADE)
+    # organization = models.ManyToManyField(Organization, related_name="users_in_org", blank=True)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 

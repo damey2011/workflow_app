@@ -8,14 +8,17 @@ from process.serializers import *
 from account.serializers import *
 
 class UsertoOrgSerializer(serializers.ModelSerializer):
-    user_obj = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all(), many=True)
+    user_obj = serializers.SlugField(max_length=50, min_length=None, allow_blank=False)
+    org = serializers.CharField(source="org.org_name", read_only=True)
     class Meta:
         model = UsertoOrg
         fields = ('id', 'user_obj', 'org')
 
 
 class UsertoGroupsSerializer(serializers.ModelSerializer):
-    # user_obj = ProfileSerializer(many=True, read_only=True)
+    user_obj = serializers.SlugField(max_length=50, min_length=None, allow_blank=False)
+    org = serializers.CharField(source="org.org_name", read_only=True)
+    grp = serializers.CharField(source="grp.group_name", read_only=True)
     class Meta:
         model = UsertoGroups
         fields = ('id', 'user_obj', 'org', 'grp')

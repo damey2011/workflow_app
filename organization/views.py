@@ -15,7 +15,7 @@ from organization.serializers import *
 
 class OrganizationList(generics.ListCreateAPIView):
     '''A user can retrieve all organizations and create an organization
-    Sample request: {"org_name":"department of Computer Science","Description":"myDescription","logo":"Image Data"}'''
+    Sample request: {"org_name":"department of Computer Science","description":"myDescription","logo":"Image Data"}'''
     serializer_class = OrganizationSerializer
     authentication_classes = (TokenAuthentication,)
     parser_classes = (MultiPartParser, FormParser,)

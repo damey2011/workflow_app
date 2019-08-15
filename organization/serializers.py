@@ -8,14 +8,17 @@ from process.serializers import *
 from account.serializers import *
 
 class UsertoOrgSerializer(serializers.ModelSerializer):
-    user_obj = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all(), many=True)
+    user_obj = serializers.SlugField(max_length=50, min_length=None, allow_blank=False)
+    org = serializers.CharField(source="org.org_name", read_only=True)
     class Meta:
         model = UsertoOrg
         fields = ('id', 'user_obj', 'org')
 
 
 class UsertoGroupsSerializer(serializers.ModelSerializer):
-    # user_obj = ProfileSerializer(many=True, read_only=True)
+    user_obj = serializers.SlugField(max_length=50, min_length=None, allow_blank=False)
+    org = serializers.CharField(source="org.org_name", read_only=True)
+    grp = serializers.CharField(source="grp.group_name", read_only=True)
     class Meta:
         model = UsertoGroups
         fields = ('id', 'user_obj', 'org', 'grp')
@@ -34,7 +37,7 @@ class OrganizationSerializer(serializers.ModelSerializer):
                                 validators=[UniqueValidator(queryset=get_user_model().objects.all(),
                                                             message="An organization with that name already exists.")])
     groups = GroupsSerializer(many=True, read_only=True)
-    userorgs = UsertoOrgSerializer(many=True, read_only=True)
+    usertoorgs = UsertoOrgSerializer(many=True, read_only=True)
     usertoorgtogroups = UsertoGroupsSerializer(many=True, read_only=True)
     processorg = ProcessSerializer(many=True, read_only=True)
     orgforms = FormSerializer(many=True, read_only=True)

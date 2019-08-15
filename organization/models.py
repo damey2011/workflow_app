@@ -20,7 +20,7 @@ class Organization(BaseModel):
 class Groups(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdgroups', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name='groups', on_delete=models.CASCADE)
-    group_name = models.CharField(max_length=255)
+    group_name = models.CharField(max_length=255, unique=True)
     description = models.TextField(max_length=255)
 
 

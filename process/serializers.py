@@ -27,10 +27,7 @@ class FormSerializer(serializers.ModelSerializer):
                   'formresponse')
 
 class TaskSerializer(serializers.ModelSerializer):
-    user_id = serializers.CharField(source="user_id.email", read_only=True)
-    stage = serializers.CharField(source="stage.name", read_only=True)
-    document = serializers.CharField(source="document.filename", read_only=True)
-    form = serializers.CharField(source="form.form_name", read_only=True)
+    user_id = serializers.ReadOnlyField(source="user.id")
 
     class Meta:
         model = Tasks

@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from django.shortcuts import render, redirect
 from organization.permissions import IsOwnerOrReadOnly
 from rest_framework.parsers import JSONParser,FormParser, MultiPartParser, FileUploadParser
@@ -41,7 +42,6 @@ class ProcessList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         user = self.request.user.id if self.request.user.is_authenticated else get_anonymous_user()  # handling unauthorized access
         serializer.save(user_id=user)
-
 
 class ProcessDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Process.'''

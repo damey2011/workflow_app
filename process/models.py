@@ -1,5 +1,5 @@
 from django.contrib.postgres.fields import JSONField
-
+from django.contrib.auth import get_user_model
 from organization.models import *
 
 
@@ -22,6 +22,7 @@ class Process(BaseModel):
 class Stage(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdstage', on_delete=models.CASCADE)
     process = models.ForeignKey(Process, related_name='stages', on_delete=models.CASCADE)
+    name = models.CharField(max_length=255,blank=True)
     order = models.CharField(max_length=255)
     isComplete = models.BooleanField(default=False)
 

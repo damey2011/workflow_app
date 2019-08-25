@@ -25,7 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('utility/', include('utils.urls', namespace='utils')),
     url(r'^schema/$', schema_view),
-    # url(r'^token_auth/', views.obtain_auth_token), #token auth    
     url(r'^$', RedirectView.as_view(url='account/login', permanent=False)),  # login
     url(r'^account/', include('account.urls')),  # accounts app
     url(r'^org/', include('organization.urls')),

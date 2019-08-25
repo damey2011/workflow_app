@@ -20,7 +20,7 @@ class Organization(BaseModel):
 class Groups(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdgroups', on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, related_name='groups', on_delete=models.CASCADE)
-    group_name = models.CharField(max_length=255)
+    group_name = models.CharField(max_length=255, unique=True)
     description = models.TextField(max_length=255)
 
 
@@ -33,7 +33,6 @@ class UsertoOrg(BaseModel):
         unique_together = ['user_obj', 'org']
 
 
-# Link these two (Also, look at onetomany relationship)
 class UsertoGroups(BaseModel):
     admin = models.ForeignKey(get_user_model(), related_name='add_user_groups', on_delete=models.CASCADE)
     user_obj = models.ForeignKey(get_user_model(), related_name='usergroups', on_delete=models.CASCADE)

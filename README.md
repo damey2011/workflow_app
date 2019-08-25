@@ -141,11 +141,16 @@ $.ajax({
 #### Communicating with the iframe
 - At this point, the form builder should be visible on the page already. When the admin finishes constructing the form as required
 and clicks on SAVE, an event is triggered from the formbuilder which might be needed on the frontend, maybe to navigate to another 
-page. Event name `workflow-form-saved`. To handle this event, we use the regular iframe communication mechanism. 
+page. Event name `workflow-form-saved` when save succeeds and `user-submitted-workflow-form-failure` when save fails. To handle this event, we use the regular iframe communication mechanism. 
 In case you need some data here from what is going on in the iframe, you can access data returned from the server through the `detail`
 attribute of the event. Sample below:
 ```js
 window.document.addEventListener('workflow-form-saved', function (e) {
+    // Your code would go in here, and to access data sent, just do 'e.detail'
+}, false)
+
+// and if it fails
+window.document.addEventListener('user-submitted-workflow-form-failure', function (e) {
     // Your code would go in here, and to access data sent, just do 'e.detail'
 }, false)
 ```
@@ -178,10 +183,16 @@ $.ajax({
     }
 });
 ```
-Event emitted by this action, (when the user submits the form) is `'user-submitted-workflow-form'`. So you might be able to handle 
+Event emitted by this action, (when the user submits the form) is `user-submitted-workflow-form` when submission succeeds 
+and `user-submitted-workflow-form-failure` when it fails. So you might be able to handle 
 this event with.
 ```js
 window.document.addEventListener('user-submitted-workflow-form', function (e) {
+    // Your code would go in here, and to access data sent, just do 'e.detail'
+}, false)
+
+// In case of failure
+window.document.addEventListener('user-submitted-workflow-form-failure', function (e) {
     // Your code would go in here, and to access data sent, just do 'e.detail'
 }, false)
 ```

@@ -102,11 +102,32 @@ class ViewForm(APIView):
 
         return render_to_response(self.template_name, ctx)
 
+    def is_field_required(self, name):
+        data = self.request.POST.get('fb_data', '[]')
+        data = json.loads(data)
+        required = False
+        for field in data:
+            if field.get('name', '') == name and field.get('required', False):
+                required = True
+        return required
+
+    def internal_validation(self):
+        IGNORE_FIELDS_IN_POST = ['initial-data', 'csrfmiddlewaretoken', 'is_ajax'] + list(CreateFormForm.Meta.fields)
+        errors = dict()
+        for key, value in self.request.POST.dict().items():
+            if key not in IGNORE_FIELDS_IN_POST:
+                if not value and self.is_field_required(key):
+                    errors.update({key: ['This field is required!']})
+        return errors
+
     def post(self, request, *args, **kwargs):
         data = request.POST
         files = request.FILES
         form_data = copy(data)
         fb_data = form_data.pop('fb_data', {})
+        errors = self.internal_validation()
+        if bool(errors):
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         if self.get_user_form_responses().exists():
             form_response = self.get_user_form_responses(True)
         else:

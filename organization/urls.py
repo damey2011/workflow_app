@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^groups/$', views.GroupsList.as_view()),  # list all Groups
     url(r'^groups/(?P<pk>[0-9]+)/$', views.GroupsDetail.as_view()),  # get a particular Group
     url(r'^joingroup/$', views.UsertoGroupsList.as_view()),  # Add user to group
-    url(r'^removeuserfromgroup/(?P<org>[0-9]+)/$', views.UsertoGroupsDetail.as_view(), ),
+    url(r'^removeuserfromgroup/(?P<pk>[0-9]+)/$', views.UsertoGroupsDetail.as_view(), ),
     # get or delete a particular group belonging to a User in a particular organization
 
 ]

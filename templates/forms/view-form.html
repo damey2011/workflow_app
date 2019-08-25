@@ -1,7 +1,11 @@
 {% load widget_tweaks %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link rel="stylesheet" href="https://draggable.github.io/formeo/assets/css/formeo.min.css">
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.css">
+<style>
+    .form-control[readonly] {
+        background-color: transparent !important;
+    }
+</style>
 <form action="{{ submit_url }}" method="post" enctype="multipart/form-data" id="view-form-container">
 
 
@@ -11,15 +15,132 @@
     <input type="submit" id="submit-wf-form" value="{% if is_update %}Update{% else %}Save{% endif %}" class="btn btn-primary">
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="https://formbuilder.online/assets/js/form-render.min.js"></script>
 <script>
+    let flatpickrInstances = []
+    let formBuilderDatePickers = []
+
+    function markFieldErrors (error) {
+        for(let key in error) {
+            if (error.hasOwnProperty(key)){
+                if (key === '__all__' || key === 'non_field_errors') {
+                    notify(error[key][0], 'danger', 3000)
+                }
+                else {
+                    let el = document.querySelector('#error_' + key)
+                    if (!el) {
+                        let input_el = document.querySelector('[name="' + key + '"]')
+                        el = document.createElement('small');
+                        el.id = 'error_' + key;
+                        el.classList.add('d-none')
+                        el.style.fontSize = '12px'
+                        el.style.color = 'red';
+                        input_el.parentNode.insertBefore(el, input_el.nextSibling);
+                    }
+                    el.innerHTML = error[key][0]
+                    if (el.classList.contains('d-none')) {
+                        el.classList.remove('d-none')
+                    }
+                }
+            }
+        }
+    }
+
+    function clearFieldErrors () {
+        let err_els = document.querySelectorAll('small[id^=error_]')
+        for (let el of err_els) {
+            el.innerHTML = ''
+            if (!el.classList.contains('d-none')) {
+                el.classList.add('d-none')
+            }
+        }
+    }
+
+    function formBuilderDateInstances () {
+        const flatpickrs = document.querySelectorAll('.formbuilder-datepicker')
+
+        for (let i=0; i < formBuilderDatePickers.length; i++) {
+            formBuilderDatePickers[i].destroy()
+        }
+
+        for (let i=0; i < flatpickrs.length; i++) {
+            formBuilderDatePickers.push(
+                flatpickrs[i].flatpickr({
+                    enableTime: false,
+                    dateFormat: "d-m-Y",
+                    defaultDate: flatpickrs[i].getAttribute('data-initial') ? new Date(flatpickrs[i].getAttribute('data-initial')) : null,
+                })
+            )
+        }
+    }
+
+    function initFlatPickerInstances () {
+        const flatpickrs = document.querySelectorAll('.flat-datepicker')
+        //Destroy if any is existing
+        for (let i=0; i < flatpickrInstances.length; i++) {
+            flatpickrInstances[i].destroy()
+        }
+
+        for (let i=0; i < flatpickrs.length; i++) {
+            flatpickrInstances.push(
+                flatpickrs[i].flatpickr({
+                    enableTime: true,
+                    dateFormat: "Z",
+                    altFormat: 'd-m-Y h:i K',
+                    altInput: true,
+                    defaultDate: flatpickrs[i].getAttribute('data-initial') ? new Date(flatpickrs[i].getAttribute('data-initial')) : null,
+                })
+            )
+        }
+    }
+
     jQuery(function($) {
         let formElement = $('#view-form-container');
         let frInstance = formElement.formRender({
             dataType: 'json',
-            formData: {{ form_config|safe }}
+            formData: {{ form_config|safe }},
+            templates: {
+                custom_date: function(fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control formbuilder-datepicker" required>',
+                        onRender: function() {
+                            formBuilderDateInstances()
+                        }
+                    };
+                },
+                text: function (fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control" required>'
+                    }
+                },
+                datetime: function(fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control flat-datepicker-no-min" required>',
+                        onRender: function() {
+                            initFlatPickerInstances()
+                        }
+                    };
+                }
+            },
+            fields: [
+                {
+                    label: 'Date',
+                    attrs: {
+                        type: 'custom_date'
+                    },
+                    icon: '📅'
+                },
+                {
+                    label: 'Date & Time',
+                    attrs: {
+                        type: 'datetime'
+                    },
+                    icon: '🕰️'
+                }
+            ]
         });
 
         $('#submit-wf-form').on('click', function (e) {
@@ -30,6 +151,7 @@
 
         function handleFormFormSubmission (e) {
             e.preventDefault();
+            clearFieldErrors();
             let submitBtn = $('#submit-wf-form')
             let btnOriginalText = submitBtn.val()
             submitBtn.val('Please wait ...')
@@ -50,6 +172,7 @@
                     submitBtn.val(btnOriginalText)
                 },
                 error: function (resp) {
+                    markFieldErrors(resp.responseJSON)
                     let event = new CustomEvent('user-submitted-workflow-form-failure', {detail:{status:'fail', data: resp}})
                     window.parent.document.dispatchEvent(event)
                     submitBtn.removeAttr('disabled')

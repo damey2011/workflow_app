@@ -8,7 +8,6 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
-
 from organization.permissions import IsOwnerOrReadOnly, Is_OwnerOrReadOnly
 from organization.serializers import *
 
@@ -18,7 +17,7 @@ class OrganizationList(generics.ListCreateAPIView):
     Sample request: {"org_name":"department of Computer Science","description":"myDescription","logo":"Image Data"}'''
     serializer_class = OrganizationSerializer
     authentication_classes = (TokenAuthentication,)
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['org_name']
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -67,7 +66,7 @@ class UpdateOrg(UpdateModelMixin):
 class OrganizationDetail(generics.RetrieveUpdateDestroyAPIView, UpdateOrg):
     '''Retrieve, modify or delete user created organization.'''
     queryset = Organization.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = OrganizationSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -79,7 +78,7 @@ class UsertoOrgList(generics.ListCreateAPIView):
     '''A User can join an organization;
         Sample request: {"user_obj":"1", "org":"1"}'''
     serializer_class = UsertoOrgSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           Is_OwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -101,7 +100,7 @@ class UsertoOrgList(generics.ListCreateAPIView):
 class UsertoOrgDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete user created organization.'''
     queryset = UsertoOrg.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = UsertoOrgSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, Is_OwnerOrReadOnly)
 
@@ -110,7 +109,7 @@ class GroupsList(generics.ListCreateAPIView):
     '''A user can retrieve all Groupss and create an Groups
         Sample request: {"group_name":"Students","description":"myDescription","organization":"1"}'''
     serializer_class = GroupsSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['group_name']
     permission_classes = (
@@ -131,7 +130,7 @@ class GroupsDetail(generics.RetrieveUpdateDestroyAPIView):
         Useful when the user that created a group wants to modify it.
     '''
     queryset = Groups.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = GroupsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -140,7 +139,7 @@ class UsertoGroupsList(generics.ListCreateAPIView):
     '''A User can join an organization;
         Sample request: {"user_obj":"1","grp":"1,"org":"1"}'''
     serializer_class = UsertoGroupsSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           Is_OwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -165,6 +164,6 @@ class UsertoGroupsDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retreive, modify or delete user to group
     '''
     queryset = UsertoGroups.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = UsertoGroupsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, Is_OwnerOrReadOnly)

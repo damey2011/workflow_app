@@ -23,7 +23,7 @@ class Stage(BaseModel):
     user = models.ForeignKey(get_user_model(), related_name='createdstage', on_delete=models.CASCADE)
     process = models.ForeignKey(Process, related_name='stages', on_delete=models.CASCADE)
     name = models.CharField(max_length=255,blank=True)
-    order = models.CharField(max_length=255)
+    order = models.IntegerField()
     isComplete = models.BooleanField(default=False)
 
 

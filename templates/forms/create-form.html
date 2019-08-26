@@ -1,6 +1,11 @@
 {% load widget_tweaks %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.css">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-<link rel="stylesheet" href="https://draggable.github.io/formeo/assets/css/formeo.min.css">
+<style>
+    .form-control[readonly] {
+        background-color: transparent !important;
+    }
+</style>
 <div class="mr-3 ml-3">
     <form action="{{ submit_url }}" id="form-builder-form">
         {% for field in form.hidden_fields %}
@@ -26,10 +31,52 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src="https://formbuilder.online/assets/js/form-builder.min.js"></script>
 <script>
+    let flatpickrInstances = []
+    let formBuilderDatePickers = []
+
+    function formBuilderDateInstances () {
+        const flatpickrs = document.querySelectorAll('.formbuilder-datepicker')
+
+        for (let i=0; i < formBuilderDatePickers.length; i++) {
+            formBuilderDatePickers[i].destroy()
+        }
+
+        for (let i=0; i < flatpickrs.length; i++) {
+            formBuilderDatePickers.push(
+                flatpickrs[i].flatpickr({
+                    enableTime: false,
+                    dateFormat: "d-m-Y",
+                    defaultDate: flatpickrs[i].getAttribute('data-initial') ? new Date(flatpickrs[i].getAttribute('data-initial')) : null,
+                })
+            )
+        }
+    }
+
+    function initFlatPickerInstances () {
+        const flatpickrs = document.querySelectorAll('.flat-datepicker')
+        //Destroy if any is existing
+        for (let i=0; i < flatpickrInstances.length; i++) {
+            flatpickrInstances[i].destroy()
+        }
+
+        for (let i=0; i < flatpickrs.length; i++) {
+            flatpickrInstances.push(
+                flatpickrs[i].flatpickr({
+                    enableTime: true,
+                    dateFormat: "Z",
+                    altFormat: 'd-m-Y h:i K',
+                    altInput: true,
+                    defaultDate: flatpickrs[i].getAttribute('data-initial') ? new Date(flatpickrs[i].getAttribute('data-initial')) : null,
+                })
+            )
+        }
+    }
+
     jQuery(function($) {
         let editor = $(document.getElementById('fb-editor')).formBuilder({
             dataType: 'json',
@@ -43,6 +90,51 @@
                 'class',
                 'placeholder',
                 'step'
+            ],
+            disableFields: [
+                'button',
+                'file',
+                'date',
+                'hidden'
+            ],
+            templates: {
+                custom_date: function(fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control formbuilder-datepicker" required>',
+                        onRender: function() {
+                            formBuilderDateInstances()
+                        }
+                    };
+                },
+                text: function (fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control" required>'
+                    }
+                },
+                datetime: function(fieldData) {
+                    return {
+                        field: '<input type="text" name="' + fieldData.name + '" class="form-control flat-datepicker-no-min" required>',
+                        onRender: function() {
+                            initFlatPickerInstances()
+                        }
+                    };
+                }
+            },
+            fields: [
+                {
+                    label: 'Date',
+                    attrs: {
+                        type: 'custom_date'
+                    },
+                    icon: '📅'
+                },
+                {
+                    label: 'Date & Time',
+                    attrs: {
+                        type: 'datetime'
+                    },
+                    icon: '🕰️'
+                }
             ]
         });
 

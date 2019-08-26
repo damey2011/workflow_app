@@ -69,7 +69,7 @@ def sign_up(request, format=None):
 
 class UserList(generics.ListCreateAPIView):
     serializer_class = ProfileSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['first_name', 'last_name', 'email']
 
@@ -120,7 +120,7 @@ class UpdateProfile(UpdateModelMixin):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView, UpdateProfile):
     '''Retrieve, modify or delete user.'''
     queryset = get_user_model().objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = ProfileSerializer
 
     def get_object(self):

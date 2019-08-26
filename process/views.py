@@ -18,7 +18,9 @@ from rest_framework import filters
 from django.conf import settings
 from rest_framework.parsers import FormParser, MultiPartParser, FileUploadParser
 from rest_framework.response import Response
-
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from account.serializers import SignUpSerializer
 from organization.permissions import IsOwnerOrReadOnly
 from process.serializers import *
@@ -28,7 +30,7 @@ from process.serializers import *
 class ProcessList(generics.ListCreateAPIView):
     '''Sample request: {"organization":"1","process_name":"StudentReg","description":"Student Registration"}'''
     serializer_class = ProcessSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     filter_backends = [filters.SearchFilter]
     search_fields = ['process_name']
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
@@ -46,7 +48,7 @@ class ProcessList(generics.ListCreateAPIView):
 class ProcessDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Process.'''
     queryset = Process.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = ProcessSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -56,7 +58,7 @@ class ProcessDetail(generics.RetrieveUpdateDestroyAPIView):
 class StageList(generics.ListCreateAPIView):
     '''Sample request: {"process":"3","order":"1"}'''
     serializer_class = StageSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -73,17 +75,44 @@ class StageList(generics.ListCreateAPIView):
 class StageDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Stage.'''
     queryset = Stage.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = StageSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 ##############################################################################################
 
+def send_email(user_email):
+    #Setting up email variables
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"    
+    sender_email = "workflow801@gmail.com"  # Enter your address
+    password = 'workflow8012580'
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+    receiver_email = user_email
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "You have been added to a task."
+    message["From"] = sender_email
+    message["To"] = receiver_email
+    # Create the plain-text and HTML version of your message
+    html = """\
+    <html>
+    <body>
+    <p>Hi there,</p>
+    <p>You have been added to a task and your response is required now. Check your dashboard to attend to the task.</p>
+    </body>
+    </html>
+    """
+    html_part = MIMEText(html, "html")
+    message.attach(html_part)
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:                        
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
 
 class TaskList(generics.ListCreateAPIView):
     '''Sample request: {"stage":"1","document":"3","form":"2","groups":"2","users":"2"}'''
     serializer_class = TaskSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -94,13 +123,28 @@ class TaskList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user.id if self.request.user.is_authenticated else get_anonymous_user()  # handling unauthorized access
+        stage_id = self.request.data.get("stage")
+        stage = Stage.objects.get(pk=stage_id)
+        stage_order = stage.order
+        if stage_order == 1:
+            users = self.request.data.get("users")
+            groups = self.request.data.get("groups")
+            if users is not None:
+                user_email = get_user_model().objects.get(pk=users).email
+                send_email(user_email)
+
+            if groups is not None:
+                usertogroups = UsertoGroups.objects.filter(grp=groups).values('user_obj')
+                for users in usertogroups:
+                    user_email = get_user_model().objects.get(pk=users['user_obj']).email
+                    send_email(user_email)   
         serializer.save(user_id=user)
 
 
 class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Task.'''
     queryset = Tasks.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = TaskSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -110,7 +154,7 @@ class TaskDetail(generics.RetrieveUpdateDestroyAPIView):
 class DocumentList(generics.ListCreateAPIView):
     '''Sample request: {"organization":"1","file":"cloudinary url"}'''
     serializer_class = DocumentSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -127,7 +171,7 @@ class DocumentList(generics.ListCreateAPIView):
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     '''Retrieve, modify or delete Document.'''
     queryset = Document.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = DocumentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -137,7 +181,7 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 class FormList(generics.ListCreateAPIView):
     '''Sample request: {"organization":"1","form_name":"1","description":"Form description","fields":"{form html elements}"}'''
     serializer_class = FormSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -154,7 +198,7 @@ class FormList(generics.ListCreateAPIView):
 class FormDetail(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve, modify or delete Form."""
     queryset = Form.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = FormSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -164,7 +208,7 @@ class FormDetail(generics.RetrieveUpdateDestroyAPIView):
 class FormresponseList(generics.ListCreateAPIView):
     """Sample request: {"form_id":"2","response":"Response"}"""
     serializer_class = FormresponseSerializer
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
@@ -181,7 +225,7 @@ class FormresponseList(generics.ListCreateAPIView):
 class FormresponseDetail(generics.RetrieveUpdateDestroyAPIView):
     """Retrieve, modify or delete Formresponse."""
     queryset = Formresponse.objects.all()
-    parser_classes = (MultiPartParser, FormParser,)
+    # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = FormresponseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
@@ -214,23 +258,24 @@ def processflow(request, format=None):
 def processflow(request, format=None):
     """
     Sample request: {
-        "id": 1,
-        "user_id":3,
-        "stage": 4,
-        "document": null,
-        "form": 1,
-        "groups": null,
-        "users": null,
-        "isComplete": false
+        "id": 1
     }
     """
+    #Setting up email variables
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"    
+    sender_email = "workflow801@gmail.com"  # Enter your address
+    password = 'workflow8012580'
+    # Create a secure SSL context
+    context = ssl.create_default_context()
+
     # set isComplete in task True
     task_id = request.data.get("id")
     task = Tasks.objects.get(pk=task_id)
     task.isComplete = True
     task.save()
     # Get stage_id of the task
-    stage_id = request.data.get("stage")
+    stage_id = task.stage.id
     stage = Stage.objects.get(pk=stage_id)
     # Get process_id of the stage
     process_id = stage.process.id
@@ -259,7 +304,39 @@ def processflow(request, format=None):
             process_data = Process.objects.get(pk=process_id)
             process_data.isComplete = True
             process_data.save()
-        Response(status=status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            #Go to next stage and send out notifications for the tasks
+            stage_order = stage.order
+            next_stage = Stage.objects.filter(process=process_id, order=stage_order+1).values('id')
+            next_stage_id = next_stage[0]['id']
+            #get all the tasks in next stage
+            tasks_in_next_stage = Tasks.objects.filter(stage=next_stage_id)
+            for task in tasks_in_next_stage:
+                # for user in task.users:
+                if task.users != None:
+                    receiver_email = task.users.email
+                    message = MIMEMultipart("alternative")
+                    message["Subject"] = "Your task is due now."
+                    message["From"] = sender_email
+                    message["To"] = receiver_email
+                    # Create the plain-text and HTML version of your message
+                    html = """\
+                    <html>
+                    <body>
+                        <p>Hi there,</p>
+                        <p>Your response is required on a task now. Check your dashboard to attend to the task.</p>
+                    </body>
+                    </html>
+                    """
+                    html_part = MIMEText(html, "html")
+                    message.attach(html_part)
+                    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:                        
+                        server.login(sender_email, password)
+                        server.sendmail(sender_email, receiver_email, message.as_string())
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_200_OK)
 
     else:
-        Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_200_OK)

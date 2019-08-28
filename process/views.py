@@ -81,7 +81,7 @@ class StageDetail(generics.RetrieveUpdateDestroyAPIView):
 
 ##############################################################################################
 
-def send_email(user_email):
+def send_email(user_email,subject,html):
     #Setting up email variables
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"    
@@ -91,18 +91,11 @@ def send_email(user_email):
     context = ssl.create_default_context()
     receiver_email = user_email
     message = MIMEMultipart("alternative")
-    message["Subject"] = "You have been added to a task."
+    message["Subject"] = subject
     message["From"] = sender_email
     message["To"] = receiver_email
     # Create the plain-text and HTML version of your message
-    html = """\
-    <html>
-    <body>
-    <p>Hi there,</p>
-    <p>You have been added to a task and your response is required now. Check your dashboard to attend to the task.</p>
-    </body>
-    </html>
-    """
+    html = html
     html_part = MIMEText(html, "html")
     message.attach(html_part)
     with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:                        
@@ -127,17 +120,27 @@ class TaskList(generics.ListCreateAPIView):
         stage = Stage.objects.get(pk=stage_id)
         stage_order = stage.order
         if stage_order == 1:
+            subject = "You have been added to a task."
+            html = """\
+                    <html>
+                    <body>
+                    <p>Hi there,</p>
+                    <p>You have been added to a task in the first stage of a new process, your response is required now.</p> 
+                    <p>Check your dashboard to attend to the task.</p>
+                    </body>
+                    </html>
+                    """
             users = self.request.data.get("users")
             groups = self.request.data.get("groups")
             if users is not None:
                 user_email = get_user_model().objects.get(pk=users).email
-                send_email(user_email)
+                send_email(user_email,subject, html)
 
             if groups is not None:
                 usertogroups = UsertoGroups.objects.filter(grp=groups).values('user_obj')
                 for users in usertogroups:
                     user_email = get_user_model().objects.get(pk=users['user_obj']).email
-                    send_email(user_email)   
+                    send_email(user_email,subject,html)           
         serializer.save(user_id=user)
 
 
@@ -325,7 +328,7 @@ def processflow(request, format=None):
                     <html>
                     <body>
                         <p>Hi there,</p>
-                        <p>Your response is required on a task now. Check your dashboard to attend to the task.</p>
+                        <p>You have been added to a task and your response is required now. Check your dashboard to attend to the task.</p>
                     </body>
                     </html>
                     """

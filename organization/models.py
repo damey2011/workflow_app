@@ -22,6 +22,7 @@ class Groups(BaseModel):
     organization = models.ForeignKey(Organization, related_name='groups', on_delete=models.CASCADE)
     group_name = models.CharField(max_length=255, unique=True)
     description = models.TextField(max_length=255)
+    hasPrivilege = models.BooleanField(default=False) 
 
 
 class UsertoOrg(BaseModel):

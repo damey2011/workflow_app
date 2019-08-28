@@ -8,7 +8,7 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
-from organization.permissions import IsOwnerOrReadOnly, Is_OwnerOrReadOnly
+from organization.permissions import IsOwnerOrReadOnly
 from organization.serializers import *
 
 
@@ -80,7 +80,7 @@ class UsertoOrgList(generics.ListCreateAPIView):
     serializer_class = UsertoOrgSerializer
     # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          Is_OwnerOrReadOnly)  # permission for authenticated users and owner of Organization
+                          IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
     def get_queryset(self):
         queryset = UsertoOrg.objects.all()
@@ -102,7 +102,7 @@ class UsertoOrgDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = UsertoOrg.objects.all()
     # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = UsertoOrgSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, Is_OwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)
 
 
 class GroupsList(generics.ListCreateAPIView):
@@ -141,7 +141,7 @@ class UsertoGroupsList(generics.ListCreateAPIView):
     serializer_class = UsertoGroupsSerializer
     # parser_classes = (MultiPartParser, FormParser,)
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
-                          Is_OwnerOrReadOnly)  # permission for authenticated users and owner of Organization
+                          IsOwnerOrReadOnly)  # permission for authenticated users and owner of Organization
 
     def get_queryset(self):
         queryset = UsertoGroups.objects.all()
@@ -166,4 +166,4 @@ class UsertoGroupsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = UsertoGroups.objects.all()
     # parser_classes = (MultiPartParser, FormParser,)
     serializer_class = UsertoGroupsSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, Is_OwnerOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly)

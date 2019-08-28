@@ -29,7 +29,7 @@ class GroupsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Groups
-        fields = ('id', 'organization', 'group_name', 'description','usertogroups')
+        fields = ('id', 'organization', 'group_name', 'description','hasPrivilege','usertogroups')
 
 class OrganizationSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source="user.id")

@@ -6,7 +6,7 @@ from process.models import *
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = ('id', 'user_id', 'organization', 'filename', 'description', 'link', 'documenttasks')
+        fields = ('id', 'user_id', 'organization', 'filename', 'description', 'link','created_date', 'documenttasks')
 
 
 class FormresponseSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class FormSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Form
-        fields = ('id', 'user_id', 'config', 'user', 'organization', 'form_name', 'description', 'formtasks',
+        fields = ('id', 'user_id', 'config', 'user', 'organization', 'form_name', 'description','created_date', 'formtasks',
                   'formresponse')
 
 
@@ -35,7 +35,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tasks
-        fields = ('id', 'user_id', 'stage', 'document', 'form', 'groups', 'users', 'isComplete')
+        fields = ('id', 'user_id', 'stage', 'document', 'form', 'groups', 'users', 'isComplete','created_date')
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class StageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stage
-        fields = ('id', 'name', 'user_id', 'process', 'order', 'isComplete', 'tasks')
+        fields = ('id', 'name', 'user_id', 'process', 'order', 'isComplete','created_date', 'tasks')
 
 
 class ProcessSerializer(serializers.ModelSerializer):
@@ -52,4 +52,4 @@ class ProcessSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Process
-        fields = ('id', 'user_id', 'organization', 'process_name', 'description', 'isComplete', 'stages')
+        fields = ('id', 'user_id', 'organization', 'process_name', 'description','created_date', 'isComplete', 'stages')

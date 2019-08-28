@@ -8,10 +8,12 @@ from rest_framework.decorators import api_view
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
+from organization.permissions import IsAdminOrReadOnly
 
+from organization.models import *
 from .authentication import *
 from .serializers import *
-
+from process.views import send_email
 
 @requires_csrf_token
 @api_view(['POST'])
@@ -30,8 +32,22 @@ def login_user(request, format=None):
             user_serializer = ProfileSerializer(user)
             token, _ = Token.objects.get_or_create(user=user.id)
             is_expired, token = token_expire_handler(token)
+            obj = Organization.objects.get(pk=1)
+            if IsAdminOrReadOnly.has_object_permission(user, obj) == True:
+                isAdmin = True
+            else:
+                isAdmin = False
+            try:                
+                privilege_group = Groups.objects.get(hasPrivilege = True)
+                user_in_privilege_group = UsertoGroups.objects.filter(user_obj=user, grp=privilege_group.id)
+                if user_in_privilege_group is not None:
+                    hasPrivilege = True
+                else:
+                    hasPrivilege = False
+            except:
+                hasPrivilege = False
             login(request, user)
-            return Response({"Token": token.key, "Expires_in": expires_in(token), "User": user_serializer.data},
+            return Response({"Token": token.key, "Expires_in": expires_in(token),"isAdmin":isAdmin,"hasPrivilege": hasPrivilege, "User": user_serializer.data},
                             status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
@@ -63,7 +79,21 @@ def sign_up(request, format=None):
                                                     phone_number=phone_number)
         user_serializer = ProfileSerializer(user)
         token = Token.objects.get(user=user.id)
-        return Response({"Token": token.key, "Expires_in": expires_in(token), "User": user_serializer.data}, status=201)
+        subject = "Welcome to workflow801!"
+        html = """\
+                    <html>
+                    <body>
+                    <p>Hi there</p>
+                    <p>Thanks for signing up on the demo build for the "workflow801" workflow management system.</p> 
+                    <p>Be sure to help us test the web application by trying out all the features available.</p>
+                    <p>You can also send us feedback at workflow801@gmail.com</p>
+                    <p>Warm regards,</p>
+                    <p>Dev team.</p>
+                    </body>
+                    </html>
+                    """
+        send_email(email,subject, html)
+        return Response({"Token": token.key, "Expires_in": expires_in(token),"isAdmin":False,"hasPrivilege": False, "User": user_serializer.data}, status=201)
     return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
